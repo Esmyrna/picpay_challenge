@@ -1,9 +1,10 @@
 package com.picpaysimplificado.repositories;
 
-import com.picpaysimplificado.domain.transaction.Transaction;
+import com.picpaysimplificado.domain.reward.Reward;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface TransactionRepository extends JpaRepository<Transaction, Long> {
+public interface RewardRepository extends JpaRepository<Reward, Long> {
+
 }

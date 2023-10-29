@@ -1,4 +1,4 @@
-package com.picpaysimplificado.domain.transaction;
+package com.picpaysimplificado.domain.reward;
 
 import com.picpaysimplificado.domain.user.User;
 import jakarta.persistence.*;
@@ -8,25 +8,23 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 
-@Entity(name="transactions")
-@Table(name = "transactions")
+@Entity(name = "rewards")
+@Table(name = "rewards")
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Transaction {
+public class Reward {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private BigDecimal amount;
+
     @ManyToOne
-    @JoinColumn(name="sender_id")
-    private User sender;
-    @ManyToOne
-    @JoinColumn(name="receiver_id")
-    private User receiver;
-    private LocalDateTime timestamp;
+    @JoinColumn(name = "user_id")
+    private User user;
+
+    private BigDecimal amount; // Valor ou quantidade do prêmio
+    private String description; // Descrição ou detalhes do prêmio
 
 }
