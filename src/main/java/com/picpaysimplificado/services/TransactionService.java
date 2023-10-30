@@ -2,6 +2,7 @@ package com.picpaysimplificado.services;
 
 import com.picpaysimplificado.domain.transaction.Transaction;
 import com.picpaysimplificado.domain.user.User;
+import com.picpaysimplificado.dtos.NotificationDTO;
 import com.picpaysimplificado.dtos.TransactionDTO;
 import com.picpaysimplificado.repositories.TransactionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,37 +22,44 @@ public class TransactionService {
 
     @Autowired
     private TransactionRepository transactionRepository;
+    @Autowired
+    private NotificationService notificationService;
 
     @Autowired
     private RestTemplate restTemplate;
 
-    private void createTransaction(TransactionDTO transactionDTO) throws Exception {
-        User sender = this.userService.findUserById(transactionDTO.senderId());
-        User receiver = this.userService.findUserById(transactionDTO.receiverId());
+    @Autowired
+    private AuthorizationService authService;
 
-        userService.validateTransaction(sender, transactionDTO.value());
+    public Transaction createTransaction(TransactionDTO transaction) throws Exception {
+        User sender = this.userService.findUserById(transaction.senderId());
+        User receiver = this.userService.findUserById(transaction.receiverId());
 
-        boolean isAuthorized = this.authorizeTransaction(sender, transactionDTO.value());
-        if(!this.authorizeTransaction(sender, transactionDTO.value())){
+        userService.validateTransaction(sender, transaction.value());
+
+        boolean isAuthorized = this.authService.authorizeTransaction(sender, transaction.value());
+        if (!isAuthorized) {
             throw new Exception("Transação não autorizada");
         }
 
-        Transaction transaction = new Transaction();
-        transaction.setAmount(transactionDTO.value());
-        transaction.setSender(sender);
-        transaction.setTimestamp(LocalDateTime.now());
-        transaction.setReceiver(receiver);
+        Transaction newTransaction = new Transaction();
+        newTransaction.setAmount(transaction.value());
+        newTransaction.setSender(sender);
+        newTransaction.setReceiver(receiver);
+        newTransaction.setTimestamp(LocalDateTime.now());
 
-        sender.setBalance(sender.getBalance().subtract(transactionDTO.value()));
+        sender.setBalance(sender.getBalance().subtract(transaction.value()));
+        receiver.setBalance(receiver.getBalance().add(transaction.value()));
+
+        this.transactionRepository.save(newTransaction);
+        this.userService.saveUser(sender);
+        this.userService.saveUser(receiver);
+
+        this.notificationService.sendNotification(sender, "Transação realizada com sucesso");
+        this.notificationService.sendNotification(receiver, "Transação recebida com sucesso");
+
+        return newTransaction;
     }
 
-    public boolean authorizeTransaction(User sender, BigDecimal value){
-       ResponseEntity<Map> authorizaionResponse = restTemplate.getForEntity("", Map.class);
-
-       if(authorizaionResponse.getStatusCode() == HttpStatus.OK){
-           String message = (String) authorizaionResponse.getBody().get("message");
-           return "Autorizado".equalsIgnoreCase(message);
-       } else return false;
-    }
 
 }
