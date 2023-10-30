@@ -17,8 +17,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
+
 
 @SpringBootTest
 public class UserServiceTest {
@@ -78,7 +77,8 @@ public class UserServiceTest {
 
     @Test
     public void testCreateUser() {
-        UserDTO userDTO = new UserDTO("Esmyrna", "Cavalcanti", "1234456", 10, "esmyrna@gmail.com", "12345", UserType.COMMON);
+        BigDecimal initialBalance = new BigDecimal("32767");
+        UserDTO userDTO = new UserDTO("Esmyrna", "Cavalcanti", "1234456",  initialBalance , "esmyrna@gmail.com", "12345", UserType.COMMON);
         User newUser = new User(userDTO);
 
         Mockito.when(userRepository.save(Mockito.any(User.class))).thenReturn(newUser);
