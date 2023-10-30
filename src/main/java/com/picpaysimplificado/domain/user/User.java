@@ -43,4 +43,8 @@ public class User {
         this.document = data.document();
         this.email = data.email();
     }
+
+
+    public User(long l, String maria, String souza, String number, String mail, String number1, BigDecimal bigDecimal, UserType userType) {
+    }
 }
