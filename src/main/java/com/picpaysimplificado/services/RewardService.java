@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.List;
+
 
 @Service
 public class RewardService {
@@ -27,7 +27,4 @@ public class RewardService {
         return rewardRepository.save(newReward);
     }
 
-
-
-    // Outros métodos conforme necessário, como atualizar uma recompensa, encontrar por ID, etc.
 }

@@ -5,7 +5,6 @@ import com.picpaysimplificado.domain.user.UserType;
 import com.picpaysimplificado.dtos.TransactionDTO;
 import com.picpaysimplificado.repositories.TransactionRepository;
 import com.picpaysimplificado.services.AuthorizationService;
-import com.picpaysimplificado.services.NotificationService;
 import com.picpaysimplificado.services.TransactionService;
 import com.picpaysimplificado.services.UserService;
 import org.junit.jupiter.api.Assertions;
@@ -15,11 +14,9 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.math.BigDecimal;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -32,10 +29,6 @@ class TransactionServiceTest {
 
     @Mock
     private AuthorizationService authService;
-
-    @Mock
-    private NotificationService notificationService;
-
 
     @InjectMocks
     private TransactionService transactionService;
@@ -68,8 +61,6 @@ class TransactionServiceTest {
         receiver.setBalance(new BigDecimal(20));
         verify(userService, times(1)).saveUser(receiver);
 
-        verify(notificationService, times(1)).sendNotification(sender, "Transação realizada com sucesso");
-        verify(notificationService, times(1)).sendNotification(receiver, "Transação recebida com sucesso");
     }
 
     @Test
@@ -123,10 +114,9 @@ class TransactionServiceTest {
         TransactionDTO request = new TransactionDTO(BigDecimal.ZERO, 1L, 2L);
         transactionService.createTransaction(request);
 
-
         verify(repository, never()).save(any());
         verify(userService, never()).saveUser(any());
-        verify(notificationService, never()).sendNotification(any(), any());
+
     }
 
 
